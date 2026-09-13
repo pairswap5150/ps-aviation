@@ -1,0 +1,17 @@
+{
+  "name": "@pairswap/aviation",
+  "version": "0.1.0",
+  "description": "Parsers shared by PairSwap and jetpanel: dispatch releases, FAA NASR, weather.",
+  "type": "module",
+  "license": "UNLICENSED",
+  "private": true,
+  "files": ["src"],
+  "exports": {
+    ".": "./src/index.js",
+    "./csv": "./src/csv.js",
+    "./nasr-frequencies": "./src/nasr-frequencies.js"
+  },
+  "scripts": {
+    "test": "node --test test/*.test.js"
+  }
+}
