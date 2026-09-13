@@ -54,14 +54,20 @@ export function freqKind(use) {
  * civil VHF voice, deduplicated by kind and frequency. `sect` carries the runway or sector split
  * for fields that publish several tower or ground frequencies.
  * @param {string} frqCsv - Contents of FRQ.csv.
- * @param {string} [aptBaseCsv] - Contents of APT_BASE.csv, for the LID to ICAO mapping.
+ * @param {string|Map<string,string>} [lidToKey] - APT_BASE.csv contents, or a ready-made
+ *   FAA-LID to emit-key map. Either way, airports without an ICAO keep their LID.
  * @returns {Record<string, Array<{use:string, kind:string, freq:number, call?:string, sect?:string}>>}
  *   Frequencies keyed by ICAO where known, else by FAA LID, each sorted ascending.
  */
-export function parseNasrFrequencies(frqCsv, aptBaseCsv = '') {
-    const keyForLid = new Map();
-    if (aptBaseCsv) {
-        const apt = parseCsv(aptBaseCsv);
+export function parseNasrFrequencies(frqCsv, lidToKey = '') {
+    // Either APT_BASE.csv (what jetpanel has to hand) or a ready-made map (what PairSwap has, in
+    // its own airports table -- and building it from there avoids a second 8MB download for two
+    // columns it already stores).
+    let keyForLid = new Map();
+    if (lidToKey instanceof Map) {
+        keyForLid = lidToKey;
+    } else if (lidToKey) {
+        const apt = parseCsv(lidToKey);
         const lidColumn = col(apt.headers, 'ARPT_ID');
         const icaoColumn = col(apt.headers, 'ICAO_ID');
         for (const row of apt.rows) {

@@ -68,3 +68,11 @@ test('malformed input yields nothing rather than throwing', () => {
     assert.deepEqual(parseNasrFrequencies(bad, APT), {}, JSON.stringify(bad));
   }
 });
+
+test('the LID map can be supplied directly instead of APT_BASE.csv', () => {
+  // PairSwap already stores the mapping in its airports table; making it re-serialise that into a
+  // CSV just to be parsed back would be silly, and would cost an 8MB download for two columns.
+  const freqs = parseNasrFrequencies(FRQ, new Map([['DCA', 'KDCA']]));
+  assert.equal(pickFrequency(freqs.KDCA, 'atis').freq, 132.65);
+  assert.ok(freqs.CAE, 'an airport missing from the map keeps its FAA identifier');
+});
